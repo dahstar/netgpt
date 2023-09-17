@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Create Tweet</h1>
+  <form method="post">
+    {% csrf_token %}
+    <textarea name="content" rows="20" cols="20"></textarea><br>
+    <button type="submit">Tweet</button>
+  </form>
+{% endblock %}

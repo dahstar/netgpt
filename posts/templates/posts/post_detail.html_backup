@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+ .horizontal-likes,
+ .horizontal-reposts {
+    display: inline-block;
+    margin-right: 20px; /* Adjust as needed */
+ }
+</style>
+<div class="post-detail">
+    <h2>Netgpt Details</h2>
+    <div class="post">
+        <p><a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>-{{ post.id }}: {{ post.content }} - {{ post.created_at }}</p>
+        <p>+1{{ post.likes.count }}</p>
+        <p>-1{{ post.dislikes.count }}</p>
+        <p>*2 {{ post.reposts.count }}</p>
+        <p>Score: {{ post.likes.count|add:post.reposts.count|add:post.dislikes.count }}</p>
+        
+        <a href="{% url 'like_post' post.pk %}"><i class="fa fa-thumbs-up"></i></a>
+        <a href="{% url 'dislike_post' post.pk %}"><i class="fa fa-thumbs-down"></i></a>
+        <a href="{% url 'repost_post' post.pk %}"><i class="fa fa-retweet" > </i>
+</a>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'reply_list_view' post_id=post.id %}"><i class="fa fa-reply" aria-hidden="true"></i></a>
+        {% endif %}
+    </div>
+    <hr>
+    <div class="replies">
+        <h3>Replies:</h3>
+        <ul id="replies-list">
+            {% for reply in replies %}
+                <li class="reply">
+                    <p><a href="{% url 'profile' reply.user.username %}">{{ reply.user.username }}</a>-{{ reply.id }}: {{ reply.content }} - {{ reply.created_at }}</p>
+                    <p>+1: {{ reply.likes.count }}</p>
+                    <p>-1: {{ reply.dislikes.count }}</p>
+                    <p>*2: {{ reply.reposts.count }}</p>
+                    <p>Score: {{ reply.likes.count|add:reply.reposts.count|add:reply.dislikes.count }}</p>
+                    
+                    <a href="{% url 'like_post' reply.pk %}"><i class="fa fa-thumbs-up"></i></a>
+                    <a href="{% url 'dislike_post' reply.pk %}"><i class="fa fa-thumbs-down"></i></a>
+                    
+                    {% if user.is_authenticated and request.user.is_superuser or user.is_authenticated and request.user == reply.user %}
+                        <a href="{% url 'delete_reply' reply.pk %}"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                    {% endif %}
+                    <a href="{% url 'reply_list_view' post_id=reply.post.id %}"><i class="fa fa-reply" aria-hidden="true"></i></a>
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% if user.is_authenticated %}
+<div class="reply-form">
+    <h3>Post a Reply:</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ reply_form.content.label_tag }}
+<textarea id="test1" name="content" placeholder="Write your reply here..." oninput="autoResize(this)"></textarea>
+            <button type="submit" class="btn btn-secondary">Sort by Date/Score</button>  
+
+
+        <button type="button" id="generate-ai-post">Generate AI Post</button>
+        <button type="submit">Post Reply</button>
+    </form>
+    <hr>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the button and form field
+    const generateAiButton = document.getElementById("generate-ai-post");
+    const replyContentField = document.getElementById("test1"); // Replace with the actual ID
+    const postId = "{{ post.id }}"; // Get the post's ID from the template
+
+    // Add a click event listener to the button
+    generateAiButton.addEventListener("click", function () {
+        // Get the post content from the input field
+        const postContent = replyContentField.value;
+        
+        // Make an AJAX request to the Django view with the post_id and post_content query parameters
+        fetch("{% url 'generate_ai_content' %}?post_id=" + postId + "&post_content=" + encodeURIComponent(postContent))
+            .then(response => response.text())
+            .then(data => {
+                // Update the form field's value with the AI-generated content
+                replyContentField.value = data;
+                
+                // Autoresize the textarea
+                autoResize(replyContentField);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    });
+
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+});
+</script>
+{% endif %}
+
+{% endblock %}

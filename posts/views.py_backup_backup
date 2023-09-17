@@ -1,0 +1,158 @@
+#from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.shortcuts import render, redirect,get_object_or_404
+from .forms import TweetForm
+from .models import Tweet
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+
+def home(request):
+    tweets = Tweet.objects.all().order_by('-created_at')
+    total_score = 0  # Initialize total score
+    for tweet in tweets:
+        tweet.score = tweet.likes.count() + tweet.retweets.count() * 2 - tweet.dislikes.count()
+        total_score += tweet.score
+    if request.method == 'POST':
+         form = TweetForm(request.POST)
+         if form.is_valid():
+            tweet = form.save(commit=False)
+            tweet.user = request.user  # Associate the tweet with the current user
+            tweet.save()
+            return redirect('tweet_list')
+    else:
+        form = TweetForm()
+    context = {'tweets': tweets, 'form': form}
+    return render(request, 'tweets/tweet_list.html', {'tweets': tweets, 'total_score': total_score})
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('tweet_list')  # Redirect after successful registration
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+def home_view(request):
+    tweets = Tweet.objects.all()
+    
+    if request.method == 'POST':
+        form = TweetForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = TweetForm()
+    
+    context = {'tweets': tweets, 'form': form}  # Include the 'form' variable
+    return render(request, 'home.html', context)
+@login_required
+def delete_tweet(request, tweet_id):
+    tweet = get_object_or_404(Tweet, pk=tweet_id)
+    
+    if request.user == tweet.user or request.user.is_superuser:
+        if request.method == 'POST':
+            tweet.delete()
+            return redirect('home')
+        context = {'tweet': tweet}
+        return render(request, 'delete_tweet.html', context)
+    else:
+        raise PermissionDenied
+@login_required
+def create_tweet(request):
+    if request.method == 'POST':
+        form = TweetForm(request.POST)
+        if form.is_valid():
+            # Create a new tweet object but don't save it yet
+            new_tweet = form.save(commit=False)
+            
+            # Set the user for the tweet (assuming you have a user authentication system)
+            new_tweet.user = request.user  # Make sure to adjust this according to your user model
+            
+            # Now save the tweet object
+            new_tweet.save()
+            
+            return redirect('tweet_list')  # Redirect to a view named 'tweet_list'
+    else:
+        form = TweetForm()
+    
+    return render(request, 'tweets/create_tweet.html', {'form': form})
+@login_required
+def like_tweet(request, tweet_id):
+    tweet = get_object_or_404(Tweet, pk=tweet_id)
+    user = request.user
+
+    if user.is_authenticated:
+        if user in tweet.likes.all():
+            tweet.likes.remove(user)
+        else:
+            tweet.likes.add(user)
+            if user in tweet.dislikes.all():
+                tweet.dislikes.remove(user)
+    else:
+        # Handle the case when the user is not authenticated
+        # You can redirect them to the login page or show an error message
+        pass
+
+    return redirect('tweet_list')
+
+@login_required
+def dislike_tweet(request, tweet_id):
+    tweet = get_object_or_404(Tweet, pk=tweet_id)
+    user = request.user
+
+    if user.is_authenticated:
+        if user in tweet.dislikes.all():
+            tweet.dislikes.remove(user)
+        else:
+            tweet.dislikes.add(user)
+            if user in tweet.likes.all():
+                tweet.likes.remove(user)
+    else:
+        # Handle the case when the user is not authenticated
+        # You can redirect them to the login page or show an error message
+        pass
+
+    # Return a redirect response to the tweet_list view
+    return redirect('tweet_list')
+
+@login_required
+def retweet_tweet(request, tweet_id):
+    tweet = get_object_or_404(Tweet, pk=tweet_id)
+    user = request.user
+
+    if user.is_authenticated:
+        if user in tweet.retweets.all():
+            tweet.retweets.remove(user)
+        else:
+            tweet.retweets.add(user)
+    else:
+        # Handle the case when the user is not authenticated
+        # You can redirect them to the login page or show an error message
+        pass
+
+    return redirect('tweet_list')
+  
+
+
+
+
+
+def tweet_list_view(request):
+    tweets = Tweet.objects.all()
+    
+    if request.method == 'POST':
+        form = TweetForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('tweet_list')  # Redirect to the tweet list page after creating a tweet
+    else:
+        form = TweetForm()
+    
+    context = {'tweets': tweets, 'form': form}
+    return render(request, 'tweets/tweet_list.html', context)
+def tweet_list(request):
+    tweets = Tweet.objects.all()
+    return render(request, 'tweets/tweet_list.html', {'tweets': tweets})

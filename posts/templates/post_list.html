@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="total-score">
+            Total Score of All Posts:{{ total_score }}
+        </div>
+
+        <!-- Search form -->
+        <form method="get" action="{% url 'post_list' %}" class="form-inline">
+            <div class="form-group">
+                <input type="text" id="search-input" name="search_term" placeholder="Search posts..." class="form-control">
+            </div>
+            <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
+
+        {% if user.is_authenticated %}
+            <p>Hello, {{ user.username }}!</p>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <p>
+                You are not logged in.
+                <a href="{% url 'login' %}">Login</a> or
+                <a href="{% url 'register' %}">Register</a>
+            </p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.content.label_tag }}
+                <textarea id="test1" name="content" oninput="adjustTextarea(this)" class="styled-input form-control">{{ form.content.value }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post</button>
+            <button type="button" id="generate-post" class="btn btn-primary">Generate AI</button>
+        </form>
+
+        <!-- Post list -->
+        <ul class="post-list">
+            {% for post in posts %}
+                <li class="post-item">
+                    <p><a href="{% url 'profile' post.user.username %}">{{ post.user.username }}</a>: {{ post.content }} - {{ post.created_at }}</p>
+                    {{ post.content }} - {{ post.created_at }}
+                    <br>
+                    Likes: {{ post.likes.count }}
+                    Dislikes: {{ post.dislikes.count }}
+                    RePosts: {{ post.reposts.count }}
+                    <br>
+                    <a href="{% url 'like_post' post.pk %}">+1</a>
+                    <a href="{% url 'dislike_post' post.pk %}">-1</a>
+                    <a href="{% url 'repost_post' post.pk %}">*2</a>
+                    <a href="{% url 'delete_post' post.pk %}">*0</a>
+                    <a href="{% url 'reply_list_view' post.pk %}">++</a>
+                    Score: {{ post.score }}
+                </li>
+                {% if not forloop.last %}
+                    <hr class="post-divider">
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
