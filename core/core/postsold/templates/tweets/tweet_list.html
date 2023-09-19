@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="total-score">
+            Total Score of All Posts: {{ total_score }}
+        </div>
+        <style>
+            #test1 {
+                width: 600px; /* Set a fixed width here */
+                max-height: auto; /* Adjust the maximum height as needed */
+                resize: vertical; /* Allow vertical resizing */
+                overflow-y: auto; /* Add vertical scroll when content exceeds max-height */
+            }
+        </style>
+        {% if user.is_authenticated %}
+            <p>Hello, {{ user.username }}!</p>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <p>
+                You are not logged in.
+                <a href="{% url 'login' %}">Login</a> or
+                <a href="{% url 'register' %}">Register</a>
+            </p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.content.label_tag }}
+                <textarea id="test1" name="content" oninput="adjustTextarea(this)" class="styled-input form-control">{{ form.content.value }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-tweet">Post</button>
+            <button type="button" id="generate-post" class="styled-input form-control">Generate AI</button>
+        </form>
+
+      <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get references to the button and form field
+        const generateAiButton = document.getElementById("generate-post");
+        const replyContentField = document.getElementById("test1"); // Replace with the actual ID
+        const tweetId = "{{ tweet.id }}"; // Get the tweet's ID from the template
+
+        // Add a click event listener to the button
+        generateAiButton.addEventListener("click", function () {
+            // Get the tweet content from the input field
+            const tweetContent = replyContentField.value;
+
+            // Make an AJAX request to the Django view with the tweet_id and tweet_content query parameters
+            fetch("{% url 'generate_ai_content' %}?tweet_id=" + tweetId + "&tweet_content=" + encodeURIComponent(tweetContent))
+                .then(response => response.text())
+                .then(data => {
+                    // Update the form field's value with the AI-generated content
+                    replyContentField.value = data;
+
+                    // Adjust the height of the text area based on the content length
+                    replyContentField.style.height = replyContentField.scrollHeight + "px";
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        });
+
+        // Add a keydown event listener to the textarea
+        replyContentField.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent the default Enter key behavior
+                replyContentField.style.height = replyContentField.scrollHeight + "px"; // Adjust the height on Enter
+                replyContentField.value += "\n";
+            } else if (event.key === "Backspace" && replyContentField.selectionStart === 0 && replyContentField.selectionEnd === 0) {
+                // Check if the cursor is at the beginning of the textarea (first character)
+                // Decrease the height of the textarea by the line height (you may need to adjust this value)
+                replyContentField.style.height = (replyContentField.scrollHeight - parseInt(getComputedStyle(replyContentField).lineHeight)) + "px";
+            }
+        });
+    });
+</script>
+
+
+        <ul class="tweet-list">
+            {% for tweet in tweets %}
+                <li class="tweet-item">
+                   <p><a href="{% url 'profile' tweet.user.username %}">{{ tweet.user.username }} </a>: {{ tweet.content }} - {{ tweet.created_at }}</p>
+ {{ tweet.content }} - {{ tweet.created_at }}
+                    <br>
+                    Likes: {{ tweet.likes.count }}
+                    Dislikes: {{ tweet.dislikes.count }}
+                    RePosts: {{ tweet.retweets.count }}
+                    Score: {{ tweet.total_score }}
+                    <br>
+                    <a href="{% url 'like_tweet' tweet.pk %}">+1</a>
+                    <a href="{% url 'dislike_tweet' tweet.pk %}">-1</a>
+                    <a href="{% url 'retweet_tweet' tweet.pk %}">*2</a>
+                    <a href="{% url 'delete_tweet' tweet.pk %}">*0</a>
+                    <a href="{% url 'reply_list_view' tweet.pk %}">++</a>
+                </li>
+                {% if not forloop.last %}
+                    <hr class="tweet-divider">
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

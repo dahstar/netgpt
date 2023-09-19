@@ -1,0 +1,21 @@
+<!-- posts/filtered_posts.html -->
+{% for post in posts %}
+    <li class="post-item">
+        <p><a href="{% url 'profile' post.user.username %}">{{ post.user.username }} </a>: {{ post.content }} - {{ post.created_at }}</p>
+        {{ post.content }} - {{ post.created_at }}
+        <br>
+        Likes: {{ post.likes.count }}
+        Dislikes: {{ post.dislikes.count }}
+        RePosts: {{ post.reposts.count }}
+        <br>
+        <a href="{% url 'like_post' post.pk %}">+1</a>
+        <a href="{% url 'dislike_post' post.pk %}">-1</a>
+        <a href="{% url 'repost_post' post.pk %}">*2</a>
+        <a href="{% url 'delete_post' post.pk %}">*0</a>
+        <a href="{% url 'reply_list_view' post.pk %}">++</a>
+        Score: {{ post.score }}
+    </li>
+    {% if not forloop.last %}
+        <hr class="post-divider">
+    {% endif %}
+{% endfor %}

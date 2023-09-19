@@ -1,0 +1,185 @@
+{% load static %}  <!-- Load the static tag library -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nexy+{% endblock %}</title>
+      <button onclick="myFunction()" class="styled-input form-control">Toggle dark mode</button>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- Additional CSS and scripts can be included here -->
+</head>
+<style>
+/* link style */
+a:link {
+  color: #1A91DA;
+}
+
+/* visited link */
+a:visited {
+  color: green;
+}
+
+/* mouse over link */
+a:hover {
+  color: hotpink;
+}
+
+/* selected link */
+a:active {
+  color: blue;
+}
+//* Light mode styles */
+.form-group input[type="text"] {
+    width: 10px; /* Adjust the width as needed */
+    height: 50px; /* Adjust the height as needed */
+   background-color:white;
+}
+/* styles.css */
+
+/* Style the input field */
+.styled-input {
+   
+
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Style the Tweet button */
+.btn-tweet {
+        background-color: #009617;
+
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+/* Style the Tweet button */
+.generate-ai-post{
+    background-color: #1DA1F2;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Additional styles for dark mode */
+.dark-mode .styled-input {
+  background-color: #1DA1F2;;
+    color: white;
+    border-color: #555;
+    width=100%;
+}
+
+.dark-mode .generate-ai-post{
+    background-color: #1A91DA;
+    border-color: #1A91DA;
+}
+
+.dark-mode .btn-tweet {
+    background-color: #1A91DA;
+    border-color: #1A91DA;
+}
+
+ padding: 25px;
+  background-color: black; /* Set default background color to black */
+  color: white; /* Set default text color to white */
+  font-size: 15px;
+}
+
+.light-mode {
+  background-color: white;
+  color: black;
+}
+.light-mode .generate-ai-post{
+    background-color: #1D1DF2;
+    border-color: #1A91DA;
+}
+
+.header-light {
+  background-color: lightgray;
+  color: black;
+}
+
+.main-light {
+  padding: 25px;
+  background-color: white;
+  color: black;
+  font-size: 15px;
+}
+
+.footer-light {
+  background-color: lightgray;
+  color: black;
+}
+
+/* Dark mode styles */
+.dark-mode {
+  background-color: black;
+  color: white;
+}
+
+.header-dark {
+  background-color: darkgray;
+  color: white;
+}
+
+.main-dark {
+  padding: 25px;
+  background-color: black;
+  color: white;
+  font-size: 15px;
+}
+
+.footer-dark {
+  background-color: darkgray;
+  color: white;
+}
+.tweet-divider {
+  margin: 15px 0;
+  border-top: 1px solid lightgray;
+}
+/* Set a maximum height for the textarea */
+
+</style>
+<body>
+ <script>
+ 
+myFunction();
+function myFunction() {
+   var element = document.body;
+   element.classList.toggle("dark-mode");
+   element.classList.toggle("light-mode"); <!-- Toggle between light and dark modes -->
+}
+</script>
+</script>
+    <header>
+        <h1>NETGPT</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about/">About</a></li>
+                <!-- More navigation links can be added here -->
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        {% block content %}
+        <!-- Content of the specific page will be inserted here -->
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; {{ year }} NETGPT All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+ .horizontal-likes,
+ .horizontal-retweets {
+    display: inline-block;
+    margin-right: 20px; /* Adjust as needed */
+ }
+</style>
+<div class="tweet-detail">
+    <h2>Netgpt Detail</h2>
+    <div class="tweet">
+        <p><a href="{% url 'profile' tweet.user.username %}">{{ tweet.user.username }}</a>-{{ tweet.id }}: {{ tweet.content }} - {{ tweet.created_at }}</p>
+        <p>+1{{ tweet.likes.count }}</p>
+        <p>-1{{ tweet.dislikes.count }}</p>
+        <p>*2 {{ tweet.retweets.count }}</p>
+        <p>Score: {{ tweet.likes.count|add:tweet.retweets.count|add:tweet.dislikes.count }}</p>
+        
+        <a href="{% url 'like_tweet' tweet.pk %}">+1</a>
+        <a href="{% url 'dislike_tweet' tweet.pk %}">-1</a>
+        <a href="{% url 'retweet_tweet' tweet.pk %}">*2</a>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'reply_list_view' tweet_id=tweet.id %}">++</a>
+        {% endif %}
+    </div>
+    <hr>
+    <div class="replies">
+        <h3>Replies:</h3>
+        <ul id="replies-list">
+            {% for reply in replies %}
+                <li class="reply">
+                    <p><a href="{% url 'profile' reply.user.username %}">{{ reply.user.username }}</a>-{{ reply.id }}: {{ reply.content }} - {{ reply.created_at }}</p>
+                    <p>+1: {{ reply.likes.count }}</p>
+                    <p>-1: {{ reply.dislikes.count }}</p>
+                    <p>*2: {{ reply.retweets.count }}</p>
+                    <p>Score: {{ reply.likes.count|add:reply.retweets.count|add:reply.dislikes.count }}</p>
+                    
+                    <a href="{% url 'like_tweet' reply.pk %}">Like</a>
+                    <a href="{% url 'dislike_tweet' reply.pk %}">Dislike</a>
+                    
+                    {% if user.is_authenticated and request.user.is_superuser or user.is_authenticated and request.user == reply.user %}
+                        <a href="{% url 'delete_reply' reply.pk %}">Delete</a>
+                    {% endif %}
+                    <a href="{% url 'reply_list_view' tweet_id=reply.tweet.id %}">Reply</a>
+                </li>
+                <hr>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% if user.is_authenticated %}
+<div class="reply-form">
+    <h3>Post a Reply:</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ reply_form.content.label_tag }}
+        <textarea id="test1" name="content" placeholder="Write your reply here..." oninput="autoResize(this)"></textarea>
+
+        <button type="button" id="generate-ai-post">Generate AI Post</button>
+        <button type="submit">Post Reply</button>
+    </form>
+    <hr>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Get references to the button and form field
+    const generateAiButton = document.getElementById("generate-ai-post");
+    const replyContentField = document.getElementById("test1"); // Replace with the actual ID
+    const tweetId = "{{ tweet.id }}"; // Get the tweet's ID from the template
+
+    // Add a click event listener to the button
+    generateAiButton.addEventListener("click", function () {
+        // Get the tweet content from the input field
+        const tweetContent = replyContentField.value;
+        
+        // Make an AJAX request to the Django view with the tweet_id and tweet_content query parameters
+        fetch("{% url 'generate_ai_content' %}?tweet_id=" + tweetId + "&tweet_content=" + encodeURIComponent(tweetContent))
+            .then(response => response.text())
+            .then(data => {
+                // Update the form field's value with the AI-generated content
+                replyContentField.value = data;
+                
+                // Autoresize the textarea
+                autoResize(replyContentField);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    });
+
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+});
+</script>
+{% endif %}
+
+{% endblock %}
