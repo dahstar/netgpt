@@ -106,15 +106,12 @@ def searchgpt(message):
         messages.append({"role": "assistant", "content": reply})
         return reply
 def profile_view(request, username):
-    # Your profile view logic here
-    # You can retrieve the user with the provided username and render the profile page
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        # Handle the case where the user does not exist
-        user = None
-
-    return render(request, 'posts/profile.html', {'user': user})
+    User = get_user_model()
+    user = User.objects.get(username=username)
+    context = {
+        'user_profile': user,
+    }
+    return render(request, 'profile.html', context)
 def generate_ai_content(request):
   try:
     global messages
