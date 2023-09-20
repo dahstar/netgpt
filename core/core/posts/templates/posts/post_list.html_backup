@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container">
         <div class="total-score">
-            Total Score of All Posts: {{ total_score }}
+            Total Score of All Posts::{{ total_score }}
         </div>
         <style>
             #test1 {
@@ -46,12 +46,15 @@
                     Dislikes: {{ post.dislikes.count }}
                     RePosts: {{ post.reposts.count }}
                     <br>
-                    <a href="{% url 'like_post' post.pk %}"><i class="icon-thumbs-up"></i> 
+                    <a href="{% url 'like_post' post.pk %}"><i class="fa fa-thumbs-up"></i> 
 </a>
-                    <a href="{% url 'dislike_post' post.pk %}"><i class="icon-thumbs-down"></i></a>
-                    <a href="{% url 'repost_post' post.pk %}"><i class="fa fa-retweet" aria-hidden="true"></i></a>
-                    <a href="{% url 'delete_post' post.pk %}"><i class="fa fa-trash""></i></a>
-                    <a href="{% url 'reply_list_view' post.pk %}"><i class="icon-reply"></i></a>
+                      <a href="{% url 'delete_post' post.pk %}"><i class="fa fa-trash"></i></a>
+        <a href="{% url 'dislike_post' post.pk %}"><i class="fa fa-thumbs-down"></i></a>
+        <a href="{% url 'repost_post' post.pk %}"><i class="fa fa-retweet" > </i>
+</a>
+      {% if user.is_authenticated %}
+            <a href="{% url 'reply_list_view' post_id=post.id %}"><i class="fa fa-reply" aria-hidden="true"></i></a>
+        {% endif %}
                     Score: {{ post.score }}
                 </li>
                 {% if not forloop.last %}

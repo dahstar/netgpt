@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container">
         <div class="total-score">
-            Total Score of All Posts::{{ total_score }}
+            Total Score of All Posts::: {{ total_score }}
         </div>
         <style>
             #test1 {
@@ -31,7 +31,7 @@
                 <textarea id="test1" name="content" oninput="adjustTextarea(this)" class="styled-input form-control">{{ form.content.value }}</textarea>
             </div>
             <button type="submit" class="btn styled-input form-control">Post</button>
-            <button type="submit" class="btn styled-input form-control">Search</button>
+            <button type="text" class="btn styled-input form-control">Search</button>
             <button type="button" id="generate-post" class="btn styled-input form-control">Generate AI</button>
              <button type="submit"  class="btn styled-input form-control">Sort by Date/Score</button>
         </form>

@@ -9,11 +9,11 @@
             Dislikes: {{ post.dislikes.count }}
             RePosts: {{ post.reposts.count }}
             <br>
-            <a href="{% url 'like_post' post.pk %}">+1</a>
-            <a href="{% url 'dislike_post' post.pk %}">-1</a>
-            <a href="{% url 'repost_post' post.pk %}">*2</a>
-            <a href="{% url 'delete_post' post.pk %}">*0</a>
-            <a href="{% url 'reply_list_view' post.pk %}">++</a>
+            <a href="{% url 'like_post' post.pk %}"><i class="fa fa-thumbs-up"></i> </a>
+            <a href="{% url 'dislike_post' post.pk %}"><i class="fa fa-thumbs-down"></i></a>
+            <a href="{% url 'repost_post' post.pk %}"><i class="fa fa-retweet" > </i></a>
+            <a href="{% url 'delete_post' post.pk %}"><i class="fa fa-trash"></i></a>
+            <a href="{% url 'reply_list_view' post.pk %}"><i class="fa fa-reply" aria-hidden="true"></i></a>
             Score: {{ post.score }}
         </li>
         {% if not forloop.last %}
