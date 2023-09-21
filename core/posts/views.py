@@ -322,7 +322,9 @@ def delete_post(request, post_id):
         context = {'post': post}
         return render(request, 'delete_post.html', context)
     else:
-        raise PermissionDenied
+         context = {}
+         return render(request, 'posts/logs/notauthorized.html', context) 
+        #raise PermissionDenied
 @login_required
 def delete_reply(request, reply_id):
     reply = get_object_or_404(Reply, pk=reply_id)
@@ -365,7 +367,7 @@ def like_post(request, post_id):
         # You can redirect them to the login page or show an error message
         pass
     context={}
-    return render(request, 'posts/post_detail.html', context)
+    return redirect('post_list')
 
 
 
@@ -387,7 +389,8 @@ def dislike_post(request, post_id):
         pass
 
     # Return a redirect response to the home view
-        return    redirect(request.META['HTTP_REFERER'])
+    return redirect('post_list')
+
 
 @login_required
 def repost_post(request, post_id):
@@ -404,7 +407,8 @@ def repost_post(request, post_id):
         # You can redirect them to the login page or show an error message
         pass
 
-        return    redirect(request.META['HTTP_REFERER'])
+    context = {'posts': posts, 'form': form}
+    return render(request, 'posts/post_list.html', context)
   
 
 

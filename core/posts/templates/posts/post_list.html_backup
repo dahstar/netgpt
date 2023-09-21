@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container">
         <div class="total-score">
-            Total Score of All Posts:: {{ total_score }}
+            Total Score of All Posts::{{ total_score }}
         </div>
         <style>
             #test1 {
@@ -31,11 +31,10 @@
                 <textarea id="test1" name="content" oninput="adjustTextarea(this)" class="styled-input form-control">{{ form.content.value }}</textarea>
             </div>
             <button type="submit" class="btn styled-input form-control">Post</button>
-            <button type="text" class="btn styled-input form-control">Search</button>
+            <button type="button" id="search-button" class="btn styled-input form-control">Search</button>
             <button type="button" id="generate-post" class="btn styled-input form-control">Generate AI</button>
-             <button type="submit"  class="btn styled-input form-control">Sort by Date/Score</button>
+             <button type="button"  class="btn styled-input form-control">Sort by Date/Score</button>
         </form>
-
         <ul class="post-list">
             {% for post in posts %}
                 <li class="post-item">
@@ -46,7 +45,7 @@
                     Dislikes: {{ post.dislikes.count }}
                     RePosts: {{ post.reposts.count }}
                     <br>
-                    <a href="{% url 'like_post' post.pk %}"><i class="fa fa-thumbs-up"></i> 
+                     <a href="https://netgpt.darkube.app/like/{{ post.id }}"><i class="fa fa-thumbs-up"></i> 
 </a>
                       <a href="{% url 'delete_post' post.pk %}"><i class="fa fa-trash"></i></a>
         <a href="{% url 'dislike_post' post.pk %}"><i class="fa fa-thumbs-down"></i></a>
@@ -75,7 +74,7 @@
         // Get references to the button and form field
         const generateAiButton = document.getElementById("generate-post");
         const replyContentField = document.getElementById("test1");
-        const searchButton = document.querySelector(".btn-secondary");
+        const searchButton = document.getElementById("search-button");
         const sortButton = document.getElementById("sort-button");
 
         let sortDescending = false; // Variable to track sorting order
