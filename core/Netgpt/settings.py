@@ -19,9 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent / 'Netgpt'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = 'django-insecure-6!w&d6b6mp0aar-*)nr@ris)vz7n7=9r7xbjk$7=9ah7p(t#9n'
+ 
 try:
  import sys
  sys.path.append('/home/kali/Desktop/')
@@ -32,7 +30,7 @@ except Exception as e:
   pass
  
 SECRET_KEY =  config("SECRET_KEY", default="123")
-# SECURITY WARNING: don't run with debug turned on in production!
+ 
 DEBUG = True
 
 ALLOWED_HOSTS = ['0.0.0.0','*']

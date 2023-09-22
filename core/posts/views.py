@@ -26,12 +26,18 @@ from django.template.loader import render_to_string
 from django.db.models import Q
 from django.db import models
 from django.http import HttpResponseRedirect
+try:
+ import sys
+ sys.path.append('/home/kali/Desktop/')
 
- 
+ from  config_local import config
+
+except Exception as e:
+  pass
 
 
 
-openai.api_key = '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'
+openai.api_key = config("openai", default="123")
 messages = [ {"role": "system", "content": 
               "You are a intelligent assistant."} ]
 def post_list_view(request):

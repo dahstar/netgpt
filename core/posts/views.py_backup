@@ -322,7 +322,7 @@ def delete_post(request, post_id):
         context = {'post': post}
         return render(request, 'delete_post.html', context)
     else:
-         context = {'posts': posts, 'form': form}
+         context = {}
          return render(request, 'posts/logs/notauthorized.html', context) 
         #raise PermissionDenied
 @login_required
