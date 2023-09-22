@@ -21,7 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent / 'Netgpt'
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6!w&d6b6mp0aar-*)nr@ris)vz7n7=9r7xbjk$7=9ah7p(t#9n'
+#SECRET_KEY = 'django-insecure-6!w&d6b6mp0aar-*)nr@ris)vz7n7=9r7xbjk$7=9ah7p(t#9n'
+SECRET_KEY = config("SECRET_KEY", default="test")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
